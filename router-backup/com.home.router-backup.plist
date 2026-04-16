@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+
+    <!-- Unique label — must match the filename -->
+    <key>Label</key>
+    <string>com.home.router-backup</string>
+
+    <!-- Path to the backup script -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/born/Logs/router-backup/backup-router.sh</string>
+    </array>
+
+    <!-- Run daily at 03:00 AM (router is idle, you're asleep) -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>3</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Redirect stdout and stderr to the same log file the script uses -->
+    <key>StandardOutPath</key>
+    <string>/Users/born/Logs/router-backup/backup.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/born/Logs/router-backup/backup.log</string>
+
+    <!-- Run the job if the Mac was asleep when the scheduled time passed -->
+    <key>RunAtLoad</key>
+    <false/>
+
+</dict>
+</plist>

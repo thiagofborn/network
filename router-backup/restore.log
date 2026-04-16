@@ -1,0 +1,26 @@
+[2026-04-15 17:42:25] =========================================
+[2026-04-15 17:42:25] Router Restore — 2026-04-15 17:42:25
+[2026-04-15 17:42:25] Backup file : backup-20260415-170453.tar.gz
+[2026-04-15 17:42:25] Archive integrity OK.
+[2026-04-15 17:42:40] =========================================
+[2026-04-15 17:42:40] Router Restore — 2026-04-15 17:42:40
+[2026-04-15 17:42:40] Backup file : backup-20260415-170453.tar.gz
+[2026-04-15 17:42:40] Archive integrity OK.
+[2026-04-15 17:42:43] Uploading backup to router at /tmp/restore-20260415-174243.tar.gz ...
+[2026-04-15 17:42:43] Upload complete.
+[2026-04-15 17:42:43] Applying backup and rebooting router...
+[2026-04-15 17:42:43] Restore command sent. Router is rebooting — wait ~60 seconds.
+[2026-04-15 17:42:43] After reboot, verify connectivity with:
+[2026-04-15 17:42:43]   ssh root@192.168.8.1
+[2026-04-15 17:42:43] =========================================
+[2026-04-15 17:50:53] =========================================
+[2026-04-15 17:50:53] Router Restore — 2026-04-15 17:50:53
+[2026-04-15 17:50:53] Backup file : backup-20260415-163731.tar.gz
+[2026-04-15 17:50:53] Archive integrity OK.
+[2026-04-15 17:50:55] Uploading backup to router at /tmp/restore-20260415-175055.tar.gz ...
+[2026-04-15 17:50:55] Upload complete.
+[2026-04-15 17:50:55] Applying backup and rebooting router...
+[2026-04-15 17:50:56] Restore command sent. Router is rebooting — wait ~60 seconds.
+[2026-04-15 17:50:56] After reboot, verify connectivity with:
+[2026-04-15 17:50:56]   ssh root@192.168.8.1
+[2026-04-15 17:50:56] =========================================
