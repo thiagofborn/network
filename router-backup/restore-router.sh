@@ -21,7 +21,8 @@
 ROUTER_HOST="192.168.8.1"
 ROUTER_USER="root"
 SSH_KEY="$HOME/.ssh/id_ed25519"
-BACKUP_DIR="$HOME/Logs/router-backup"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP_DIR="$SCRIPT_DIR"
 LOG_FILE="$BACKUP_DIR/restore.log"
 # -----------------------------------------------------------------------------
 
