@@ -1,2 +1,11 @@
 *.md
 !README.md
+
+# macOS cruft
+.DS_Store
+
+# client VPN profiles — contain private keys
+*.ovpn
+
+# router backup archives — binary, rotated on a schedule, not source
+router-backup/*.tar.gz

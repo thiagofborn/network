@@ -37,8 +37,10 @@ ssh -i "$SSH_KEY" -o ConnectTimeout=10 -o BatchMode=yes \
     "sysupgrade --create-backup ${REMOTE_FILE} && echo OK"
 
 # 2. Download it to the Mac
+#    -O = legacy SCP protocol; the router has no sftp-server, so the modern
+#    SFTP-based scp (macOS default) fails with "Connection closed".
 log "Downloading backup to ${LOCAL_FILE} ..."
-scp -i "$SSH_KEY" -o ConnectTimeout=10 \
+scp -O -i "$SSH_KEY" -o ConnectTimeout=10 \
     "${ROUTER_USER}@${ROUTER_HOST}:${REMOTE_FILE}" \
     "${LOCAL_FILE}"
 
