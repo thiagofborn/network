@@ -88,7 +88,7 @@ check_wan() {
 
 check_wan "Digi WAN1" wan
 echo ""
-check_wan "Vodafone WAN2" secondwan
+check_wan "MEO WAN2" secondwan
 
 echo ""
 echo "  +-- Default routes"
