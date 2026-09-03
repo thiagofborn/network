@@ -56,11 +56,11 @@ ssh root@100.83.50.117 'uci set network.wan.auto=1 && uci set kmwan.wan.disabled
 ### Game PC pinned to MEO (source policy routing)
 
 `kmwan` on this firmware has no per-device policy, so the game PC
-(`192.168.8.133`, MAC `dc:45:46:a7:8d:93`) is pinned with plain OpenWrt
+(`192.168.8.196`, MAC `a0:36:bc:bb:e4:0d`) is pinned with plain OpenWrt
 policy routing, independent of kmwan:
 
-- `/etc/config/dhcp` — static lease `gamepc` → `192.168.8.133` (stable src).
-- `/etc/config/network` — `config rule 'gamepc_meo'`: `src 192.168.8.133/32`,
+- `/etc/config/dhcp` — static lease `gamepc` → `192.168.8.196` (stable src).
+- `/etc/config/network` — `config rule 'gamepc_meo'`: `src 192.168.8.196/32`,
   `lookup 100`, `priority 4900` (above kmwan's `main` lookup, below its
   fwmark rules).
 - `/etc/hotplug.d/iface/40-gamepc-meo` — on `secondwan` up, sets
@@ -72,7 +72,7 @@ policy routing, independent of kmwan:
 - **Soft failover:** MEO down ⇒ table 100 empty ⇒ rule 4900 falls through to
   `main` ⇒ the game PC uses whatever WAN is up (DIGI).
 
-Verify: `ip route get 8.8.8.8 from 192.168.8.133 iif br-lan` → `dev eth1.2`.
+Verify: `ip route get 8.8.8.8 from 192.168.8.196 iif br-lan` → `dev eth1.2`.
 To pin another device, add a `config rule` with its IP and the same
 `lookup 100`.
 
