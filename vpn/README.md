@@ -21,12 +21,16 @@ The router has two uplinks, managed by GL's `kmwan` (kernel multi-WAN).
 | Uplink | Interface | Link | Address | State |
 |---|---|---|---|---|
 | **MEO** | `secondwan` → `eth1.2` (switch1 **port 7**, the 2.5 G LAN jack), DHCP | MEO CPE in **bridge mode** | **public**, e.g. `176.79.20.75/24` gw `176.79.20.1` (dynamic) | **working** — primary |
-| **DIGI** | `wan` → `eth0.20`, PPPoE (`166961426@digi`) | — | **CGNAT** `100.69.x` (RFC 6598 `100.64.0.0/10`) | connects, but **outbound TCP 443 fails** — unusable |
+| **DIGI** | `wan` → `eth0.20`, PPPoE (`166961426@digi`) | — | **CGNAT** `100.69.x` (RFC 6598 `100.64.0.0/10`) | working (was flaky earlier 2026-09-03 — DIGI-side, recovered) |
 
-- **DIGI**: ICMP and HTTP :80 pass (real fetches, not a captive portal), but
-  outbound **TCP 443 never completes**. No HTTPS ⇒ no usable internet and no
-  Tailscale over this link. This is DIGI-side (plan restriction / activation
-  / 443 filter) — nothing to fix on the router. Call DIGI.
+- **DIGI**: was broken for hours on 2026-09-03 — first fully dead, then
+  ICMP + HTTP:80 only with **outbound TCP 443 dead**, then recovered on its
+  own (multiple PPPoE reconnects; DIGI-side provisioning/CGNAT, nothing on
+  the router). Now passes HTTPS to many hosts, 3/3 stable. Still CGNAT
+  (`100.69.x` in `100.64.0.0/10`) so no inbound, strict NAT, and the
+  Tailscale `100.64/10` workarounds stay needed. `kmwan`'s health check is
+  **ICMP-only** — it would NOT catch another "ping OK, 443 dead" state, so
+  if HTTPS goes flaky again, suspect DIGI and disable `kmwan.wan` (below).
 - **MEO bridge mode**: the CPE bridges, so the router holds the public IP
   directly on `eth1.2`. Stable after a cable swap (the 2.5 G port was
   flapping every ~1 min on the old cable — see history below).
@@ -43,14 +47,13 @@ it in rotation; every flow that hashes to the DIGI nexthop then fails HTTPS.
 ssh root@100.83.50.117 'uci set kmwan.wan.disabled=1 && uci commit kmwan && /etc/init.d/kmwan restart'
 ```
 
-**Done 2026-09-03:** `kmwan.wan.disabled=1` + `network.wan.auto=0` (both
-committed) + `ifdown wan`. DIGI is fully out of routing and stays out across
-reboot. MEO is the sole active WAN; default route is single-path via
-`176.79.20.1 dev eth1.2`.
-
-Restore when DIGI passes 443:
+History 2026-09-03: while DIGI's 443 was dead it was taken out with
+`kmwan.wan.disabled=1` + `network.wan.auto=0` + `ifdown wan`. **Reverted the
+same day** once DIGI recovered — currently `kmwan.wan.disabled=0`,
+`network.wan.auto=1`, `mode=balance` (both WANs load-sharing). To pull DIGI
+again if it regresses:
 ```
-ssh root@100.83.50.117 'uci set network.wan.auto=1 && uci set kmwan.wan.disabled=0 && uci commit && ifup wan && /etc/init.d/kmwan restart'
+ssh root@100.83.50.117 'uci set network.wan.auto=0 && uci set kmwan.wan.disabled=1 && uci commit && ifdown wan && /etc/init.d/kmwan restart'
 ```
 
 ### Game PC pinned to MEO (source policy routing)
