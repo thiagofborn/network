@@ -43,9 +43,15 @@ it in rotation; every flow that hashes to the DIGI nexthop then fails HTTPS.
 ssh root@100.83.50.117 'uci set kmwan.wan.disabled=1 && uci commit kmwan && /etc/init.d/kmwan restart'
 ```
 
-Re-enable (`kmwan.wan.disabled=0`) once DIGI is fixed. Also note: after a
-reboot the DIGI `wan` interface comes back up on its own (`auto=1`); to keep
-it fully out until it works, `uci set network.wan.auto=0 && uci commit network`.
+**Done 2026-09-03:** `kmwan.wan.disabled=1` + `network.wan.auto=0` (both
+committed) + `ifdown wan`. DIGI is fully out of routing and stays out across
+reboot. MEO is the sole active WAN; default route is single-path via
+`176.79.20.1 dev eth1.2`.
+
+Restore when DIGI passes 443:
+```
+ssh root@100.83.50.117 'uci set network.wan.auto=1 && uci set kmwan.wan.disabled=0 && uci commit && ifup wan && /etc/init.d/kmwan restart'
+```
 
 ### Game PC pinned to MEO (source policy routing)
 
