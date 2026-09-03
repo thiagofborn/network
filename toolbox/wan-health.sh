@@ -1,11 +1,14 @@
 #!/bin/bash
 
+PROVIDER1="MEO"  # change this: "Digi", "MEO", "NOS", etc.
+PROVIDER2="Digi"
+ISP_SUFFIX="- $PROVIDER1 modem"
 SSH="ssh -i ~/.ssh/id_ed25519 -o ConnectTimeout=10 -o BatchMode=yes -o LogLevel=error -T root@192.168.8.1"
 
 echo "
-#----------------------------------------------------#
-# WAN Health Check — $(date '+%Y-%m-%d %H:%M:%S')
-#----------------------------------------------------#
+#---------------------------------------------------------------------------#
+# WAN Health Check — $(date '+%Y-%m-%d %H:%M:%S') $PROVIDER1 and $PROVIDER2
+#---------------------------------------------------------------------------#
 "
 
 $SSH <<'ROUTER' | grep -vE '^\ *(M+|\$M+|For those|OpenWrt|-{3,}|={3,}|$)' | sed '/^[[:space:]]*$/d'
@@ -70,15 +73,23 @@ check_wan() {
     fi
   done
 
-  echo "  |"
+  # Detect protocol and show provider + public IP accordingly
   if [ "$proto" = "pppoe" ]; then
-    echo "  |   Public IP : $assigned_ip  (PPPoE — this IS your WAN IP)"
+    echo "  |   Provider : Digi (PPPoE — this IS your WAN IP)" \
+      && echo "  |   Public IP : $assigned_ip" || echo "  |   PubIP: ($assigned_ip)";
   else
     local exit_ip
     exit_ip=$(curl -s --interface "$assigned_ip" --max-time 5 https://ifconfig.me 2>/dev/null)
-    [ -n "$exit_ip" ] \
-      && echo "  |   Public IP : $exit_ip  (Vodafone modem NAT)" \
-      || echo "  |   Public IP : (ifconfig.me unreachable)"
+    
+    if [ -n "$exit_ip" ]; then
+      # DHCP mode
+      echo "  |   Provider : ${PROVIDER} (DHCP)" \
+        && echo "  |   Public IP : $exit_ip" || echo "  |   PubIP: ($exit_ip)";
+    else
+      # Ifconfig.me returned empty
+      echo "  |   Provider : ${PROVIDER}" \
+        && echo "  |   Public IP : (ifconfig.me unreachable)" || echo "  |   PubIP: (empty)";
+    fi
   fi
 
   [ "$all_ok" -eq 1 ] \
@@ -88,7 +99,7 @@ check_wan() {
 
 check_wan "Digi WAN1" wan
 echo ""
-check_wan "MEO WAN2" secondwan
+check_wan "$PROVIDER2 WAN2" secondwan
 
 echo ""
 echo "  +-- Default routes"
