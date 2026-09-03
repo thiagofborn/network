@@ -10,7 +10,9 @@
 set -euo pipefail
 
 # --- Configuration -----------------------------------------------------------
-ROUTER_HOST="192.168.8.1"
+# Override with e.g. ROUTER_HOST=100.83.50.117 when the LAN path is blocked
+# (macOS Local Network privacy block) — the router's Tailscale IP still works.
+ROUTER_HOST="${ROUTER_HOST:-192.168.8.1}"
 ROUTER_USER="root"
 SSH_KEY="$HOME/.ssh/id_ed25519"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

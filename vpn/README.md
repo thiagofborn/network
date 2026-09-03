@@ -47,6 +47,29 @@ Re-enable (`kmwan.wan.disabled=0`) once DIGI is fixed. Also note: after a
 reboot the DIGI `wan` interface comes back up on its own (`auto=1`); to keep
 it fully out until it works, `uci set network.wan.auto=0 && uci commit network`.
 
+### Game PC pinned to MEO (source policy routing)
+
+`kmwan` on this firmware has no per-device policy, so the game PC
+(`192.168.8.133`, MAC `dc:45:46:a7:8d:93`) is pinned with plain OpenWrt
+policy routing, independent of kmwan:
+
+- `/etc/config/dhcp` — static lease `gamepc` → `192.168.8.133` (stable src).
+- `/etc/config/network` — `config rule 'gamepc_meo'`: `src 192.168.8.133/32`,
+  `lookup 100`, `priority 4900` (above kmwan's `main` lookup, below its
+  fwmark rules).
+- `/etc/hotplug.d/iface/40-gamepc-meo` — on `secondwan` up, sets
+  `default via <MEO gw> dev eth1.2 table 100`; on `secondwan` down, flushes
+  table 100. The MEO gateway is DHCP-dynamic so it's read from the live
+  `main` table each time (netifd also still lists a stale `192.168.10.1`
+  nexthop from the old Vodafone upstream — the script filters to the on-link
+  one).
+- **Soft failover:** MEO down ⇒ table 100 empty ⇒ rule 4900 falls through to
+  `main` ⇒ the game PC uses whatever WAN is up (DIGI).
+
+Verify: `ip route get 8.8.8.8 from 192.168.8.133 iif br-lan` → `dev eth1.2`.
+To pin another device, add a `config rule` with its IP and the same
+`lookup 100`.
+
 ---
 
 ## Layer 1 — Tailscale (the remote-access path)
